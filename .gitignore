@@ -1,0 +1,11 @@
+target/
+.svn/
+.idea/
+**/*.iml
+**/.project
+**/.classpath
+**/.settings/
+build/
+.gradle/
+*/out/
+alfresco.log*

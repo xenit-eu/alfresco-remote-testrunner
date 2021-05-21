@@ -1,0 +1,74 @@
+plugins {
+    id "eu.xenit.docker-alfresco" version "5.2.0"
+    id "eu.xenit.docker-compose" version "5.2.0"
+    id 'java'
+    id 'eu.xenit.de'
+}
+
+description = "Alfresco integration-test runner - tests"
+
+dependencies {
+    testImplementation 'org.mockito:mockito-core:1.10.19'
+
+    alfrescoProvided project(':alfresco-remote-testrunner')
+    alfrescoProvided project('test-target-project')
+    alfrescoProvided("junit:junit:4.12")
+    alfrescoProvided("org.alfresco:alfresco-repository:${alfrescoVersion}")
+    alfrescoProvided "org.osgi:org.osgi.core:4.3.1"
+
+    baseAlfrescoWar "org.alfresco:alfresco:${alfrescoVersion}@war"
+    alfrescoAmp 'eu.xenit:alfresco-dynamic-extensions-repo-52:2.0.5@amp'
+}
+
+jar {
+
+    bnd(
+            'Bundle-Name': project.description,
+            'Bundle-Description': project.description,
+            'Bundle-SymbolicName': "${project.group}.${project.name}",
+            'Require-Bundle': 'eu.xenit.testing.integration-testing.alfresco-remote-testrunner',
+            'Alfresco-Spring-Configuration': 'eu.xenit.testing.integrationtesting.tests'
+    )
+}
+
+dockerBuild {
+    alfresco {
+        baseImage = "hub.xenit.eu/public/alfresco-repository-community:5.2"
+        leanImage = true
+    }
+}
+
+composeUp.doLast {
+    println "fixing up installBundle settings:"
+
+    def alfrescoContainer = dockerCompose.servicesInfos.alfresco.firstContainer
+    println "-- host: ${alfrescoContainer.host}"
+    println "-- port: ${alfrescoContainer.ports[8080]}"
+
+    rootProject.subprojects {
+        plugins.withId('eu.xenit.de') {
+            alfrescoDynamicExtensions.repository.endpoint {
+                host = alfrescoContainer.host
+                port = alfrescoContainer.ports[8080]
+            }
+        }
+    }
+}
+
+installBundle {
+    dependsOn(composeUp)
+    dependsOn('test-target-project:installBundle')
+    dependsOn(':alfresco-remote-testrunner:installBundle')
+}
+
+test {
+    dependsOn(installBundle)
+
+    testClassesDirs += sourceSets.main.output.classesDirs
+
+    doFirst {
+        def alfrescoContainer = dockerCompose.servicesInfos.alfresco.firstContainer
+        systemProperty 'eu.xenit.testing.integrationtesting.remote', "http://admin:admin@${alfrescoContainer.host}:${alfrescoContainer.ports[8080]}/alfresco/s"
+    }
+}
+dockerCompose.isRequiredBy(test)

@@ -1,0 +1,90 @@
+plugins {
+    id "base"
+    id 'eu.xenit.de' version '2.0.5' apply false
+    id 'eu.xenit.alfresco' version '1.0.1'
+    id 'org.ajoberstar.reckon' version '0.13.0'
+}
+
+subprojects {
+    group 'eu.xenit.testing.integration-testing'
+    version = rootProject.version
+
+    ext.alfrescoVersion = '5.2.f'
+
+    apply plugin: 'eu.xenit.alfresco'
+    repositories {
+        mavenCentral()
+        alfrescoPublic()
+    }
+
+    plugins.withId('eu.xenit.de') {
+        alfrescoDynamicExtensions {
+            repository {
+                endpoint {
+                    host = project.properties.getOrDefault('host', 'localhost')
+                    port = project.properties.getOrDefault('port', '8080')
+                }
+            }
+        }
+    }
+
+    plugins.withId('java') {
+        sourceCompatibility = 1.8
+    }
+
+    plugins.withId("maven-publish") {
+        publishing {
+            publications {
+                mavenJava(MavenPublication) {
+                    from components.java
+                    pom {
+                        url = 'https://github.com/xenit-eu/alfresco-remote-testrunner'
+                        name = "alfresco-remote-testrunner"
+                        description = project.description
+                        developers {
+                            developer {
+                                id = "xenit"
+                                name = "Xenit Solutions NV"
+                            }
+                        }
+                        scm {
+                            connection = 'scm:git:git@github.com:xenit-eu/alfresco-remote-testrunner.git'
+                            developerConnection = 'scm:git:git@github.com:xenit-eu/alfresco-remote-testrunner.git'
+                            url = 'https://github.com/xenit-eu/alfresco-remote-testrunner.git'
+                        }
+
+                        licenses {
+                            license {
+                                name = 'The Apache License, Version 2.0'
+                                url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                            }
+                        }
+                    }
+                }
+            }
+
+            repositories {
+                if (version.version.isFinal()) {
+                    sonatypeMavenCentral {
+                        credentials {
+                            username = project.hasProperty('publish_username') ? project.publish_username : ''
+                            password = project.hasProperty('publish_password') ? project.publish_password : ''
+                        }
+                    }
+                } else {
+                    sonatypeSnapshots {
+                        credentials {
+                            username = project.hasProperty('publish_username') ? project.publish_username : ''
+                            password = project.hasProperty('publish_password') ? project.publish_password : ''
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+reckon {
+    scopeFromProp()
+    snapshotFromProp()
+}

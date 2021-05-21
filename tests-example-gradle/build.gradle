@@ -1,0 +1,63 @@
+plugins {
+    id 'java'
+    id 'eu.xenit.de' version '2.0.5'
+    id 'eu.xenit.alfresco' version '1.0.1'
+    id 'eu.xenit.alfresco-remote-testrunner' version '2.0.0-SNAPSHOT'
+    id 'eu.xenit.docker-alfresco' version '5.2.0'
+    id 'eu.xenit.docker-compose' version '5.2.0'
+}
+
+sourceCompatibility = 1.8
+
+project.description = "Example integration tests - gradle"
+
+ext.alfrescoVersion = '5.2.f'
+
+repositories {
+    mavenCentral()
+    alfrescoPublic()
+    mavenLocal {
+        content {
+            includeGroup 'eu.xenit.testing.integration-testing'
+        }
+    }
+}
+
+dependencies {
+    integrationTestImplementation "junit:junit:4.12"
+    alfrescoProvided "org.alfresco:alfresco-repository:${alfrescoVersion}"
+
+    baseAlfrescoWar "org.alfresco:alfresco:${alfrescoVersion}@war"
+    alfrescoAmp 'eu.xenit:alfresco-dynamic-extensions-repo-52:2.0.5@amp'
+}
+
+alfrescoIntegrationTest {
+    integrationTestPackages = ['eu.xenit.example.repo.tests']
+}
+
+jar {
+    bnd([
+            "Alfresco-Spring-Configuration": "eu.xenit.example.repo",
+            "Export-Package"               : "eu.xenit.example.repo",
+    ])
+}
+
+installBundle.dependsOn(composeUp)
+
+dockerBuild {
+    alfresco {
+        baseImage = "hub.xenit.eu/public/alfresco-repository-community:5.2"
+    }
+}
+
+composeUp.doLast {
+    def alfrescoContainer = dockerCompose.servicesInfos.alfresco.firstContainer
+    println "-- host: ${alfrescoContainer.host}"
+    println "-- port: ${alfrescoContainer.ports[8080]}"
+
+    alfrescoDynamicExtensions.repository.endpoint {
+        host = alfrescoContainer.host
+        port = alfrescoContainer.ports[8080]
+    }
+}
+

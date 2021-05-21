@@ -1,0 +1,68 @@
+plugins {
+    id "java"
+    id "maven-publish"
+    id "signing"
+    id 'com.github.johnrengelman.shadow' version '5.1.0' apply false
+    id 'eu.xenit.de'
+}
+
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+
+apply plugin: 'eu.xenit.de'
+
+project.description = "Alfresco integration-test runner"
+
+configurations {
+    shadowed
+    compileOnly.extendsFrom(shadowed)
+    testImplementation.extendsFrom(shadowed)
+}
+
+dependencies {
+    alfrescoProvided "org.alfresco:alfresco-repository:${alfrescoVersion}"
+    alfrescoProvided "org.osgi:org.osgi.core:4.3.1"
+    alfrescoProvided "org.slf4j:slf4j-api:1.7.2"
+
+    shadowed 'commons-lang:commons-lang:2.6'
+    shadowed "junit:junit:4.12"
+    shadowed 'org.apache.httpcomponents:fluent-hc:4.3.3'
+
+    testImplementation 'com.github.stefanbirkner:system-rules:1.16.1'
+    testImplementation 'org.mockito:mockito-core:2.23.4'
+}
+
+task shadowJar(type: ShadowJar) {
+    classifier = "shadowjar"
+    from(sourceSets.main.output)
+    configurations = [project.configurations.shadowed]
+}
+
+jar {
+    from(project.provider({ zipTree(shadowJar.outputs.files.singleFile) }))
+    dependsOn shadowJar
+
+    bnd(
+            'Bundle-Name': project.description,
+            'Bundle-Description': project.description,
+            'Bundle-SymbolicName': "${project.group}.${project.name}",
+            'Alfresco-Spring-Configuration': 'eu.xenit.testing.integrationtesting',
+            'Import-Package': 'org.alfresco.*,org.springframework.*;version=\"[3.0,999)\",com.github.dynamicextensionsalfresco.*,org.osgi.*,org.slf4j.*',
+            'Export-Package': 'junit.framework;version=4.12,'
+                    + 'org.junit;version=4.12,'
+                    + 'org.junit.runner;version=4.12,'
+                    + 'org.junit.runner.manipulation;version=4.12,'
+                    + 'org.junit.runners;version=4.12,'
+                    + 'org.junit.runners.model;version=4.12,'
+                    + 'org.junit.experimental.categories;version=4.12,'
+                    + 'org.junit.internal;version=4.12,'
+                    + 'org.junit.rules;version=4.12,'
+                    + 'org.junit.matchers;version=4.12,'
+                    + 'org.junit.runner.notification;version=4.12,'
+                    + "eu.xenit.testing.integrationtesting.runner.*;version=${project.version.version.normal}"
+    )
+}
+
+java {
+    withJavadocJar()
+    withSourcesJar()
+}

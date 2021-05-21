@@ -1,0 +1,57 @@
+plugins {
+    id 'java-gradle-plugin'
+    id "maven-publish"
+    id "com.gradle.plugin-publish" version "0.13.0"
+    id "de.fuerstenau.buildconfig" version "1.1.8"
+    id 'nebula.integtest' version "7.0.9"
+}
+
+buildConfig {
+    packageName = "eu.xenit.testing.integrationtesting.gradle.internal"
+}
+
+repositories {
+    gradlePluginPortal()
+}
+
+dependencies {
+    implementation 'com.github.jengelman.gradle.plugins:shadow:5.1.0'
+    implementation 'eu.xenit.de:gradle-plugin:2.0.5'
+    implementation 'biz.aQute.bnd:biz.aQute.bnd.gradle:4.1.0'
+    testImplementation group: 'junit', name: 'junit', version: '4.12'
+    testImplementation "eu.xenit.gradle:alfresco-sdk:1.0.1"
+    testImplementation project(':alfresco-remote-testrunner')
+
+}
+
+integrationTest.mustRunAfter(test)
+
+gradlePlugin {
+    plugins {
+        remoteTestRunner {
+            id = "eu.xenit.alfresco-remote-testrunner"
+            displayName = "Alfresco integration testing plugin"
+            implementationClass = "eu.xenit.testing.integrationtesting.gradle.IntegrationTestPlugin"
+        }
+    }
+}
+
+pluginBundle {
+    vcsUrl = "https://github.com/xenit-eu/alfresco-remote-testrunner"
+    website = vcsUrl
+    description = "Gradle plugin for running Alfresco integration tests"
+    tags = ["alfresco", "integration-testing", "test", "integration"]
+
+    mavenCoordinates {
+        groupId = project.group
+        artifactId = project.name
+    }
+}
+
+afterEvaluate {
+    plugins.withType(IdeaPlugin) { idea ->
+        idea.model.module {
+            generatedSourceDirs += project.tasks.generateBuildConfig.outputDir
+        }
+    }
+}

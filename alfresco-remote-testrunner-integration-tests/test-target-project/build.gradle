@@ -1,0 +1,20 @@
+plugins {
+    id "eu.xenit.alfresco"
+    id 'eu.xenit.de'
+    id 'java'
+}
+
+project.description = 'Example bundle to test'
+
+dependencies {
+    alfrescoProvided("org.alfresco:alfresco-repository:${alfrescoVersion}")
+}
+
+jar {
+    bnd(
+            'Bundle-Name': project.description,
+            'Bundle-Description': project.description,
+            'Bundle-SymbolicName': "${project.group}.${project.name}",
+            'Export-Package': 'eu.xenit.testing.integrationtesting.example.*'
+    )
+}

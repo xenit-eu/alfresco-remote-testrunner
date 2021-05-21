@@ -1,0 +1,28 @@
+version: '2.1'
+
+services:
+  alfresco:
+    image: ${DOCKER_IMAGE}
+    volumes:
+    - alfresco:/opt/alfresco/alf_data
+    ports:
+    - ${DOCKER_IP}::8080
+    #- 8000:8000 # debug
+    environment:
+    - DB_URL=jdbc:postgresql://database:5432/alfresco
+    - INDEX=noindex
+    - GLOBAL_ooo.enabled=false
+    - LOG4J_logger.eu.xenit.testing.integrationtesting=DEBUG
+
+  database:
+    image: hub.xenit.eu/public/postgres
+    volumes:
+    - postgres:/var/lib/postgresql/data
+    environment:
+    - POSTGRES_USER=alfresco
+    - POSTGRES_PASSWORD=admin
+    - POSTGRES_DB=alfresco
+
+volumes:
+  alfresco:
+  postgres:

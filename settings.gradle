@@ -1,0 +1,9 @@
+plugins {
+    id "eu.xenit.enterprise-conventions.oss" version "0.2.0"
+}
+rootProject.name = 'alfresco-remote-testrunner'
+include ':alfresco-remote-testrunner'
+include ':alfresco-remote-testrunner-integration-tests'
+include ':alfresco-remote-testrunner-integration-tests:test-target-project'
+include ':alfresco-remote-testrunner-gradle-plugin'
+
