@@ -45,6 +45,7 @@ jar {
             'Bundle-Name': project.description,
             'Bundle-Description': project.description,
             'Bundle-SymbolicName': "${project.group}.${project.name}",
+            'Bundle-Version': "${project.version.version.normal}",
             'Alfresco-Spring-Configuration': 'eu.xenit.testing.integrationtesting',
             'Import-Package': 'org.alfresco.*,org.springframework.*;version=\"[3.0,999)\",com.github.dynamicextensionsalfresco.*,org.osgi.*,org.slf4j.*',
             'Export-Package': 'junit.framework;version=4.12,'

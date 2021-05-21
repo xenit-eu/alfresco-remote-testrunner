@@ -26,6 +26,7 @@ jar {
             'Bundle-Name': project.description,
             'Bundle-Description': project.description,
             'Bundle-SymbolicName': "${project.group}.${project.name}",
+            'Bundle-Version': "${project.version.version.normal}",
             'Require-Bundle': 'eu.xenit.testing.integration-testing.alfresco-remote-testrunner',
             'Alfresco-Spring-Configuration': 'eu.xenit.testing.integrationtesting.tests'
     )

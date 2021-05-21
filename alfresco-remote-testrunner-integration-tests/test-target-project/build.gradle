@@ -4,6 +4,7 @@ plugins {
     id 'java'
 }
 
+project.version = '1.2.3'
 project.description = 'Example bundle to test'
 
 dependencies {
