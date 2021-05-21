@@ -92,5 +92,5 @@ subprojects {
 
 reckon {
     scopeFromProp()
-    stageFromProp('alpha', 'beta', 'rc', 'final')
+    stageFromProp('dev', 'rc', 'final')
 }
