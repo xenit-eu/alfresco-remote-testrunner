@@ -129,7 +129,10 @@ public class AlfrescoTestRunner extends BlockJUnit4ClassRunner {
 
     private URI getTestRunnerUri(FrameworkMethod method) throws URISyntaxException {
         String baseUrl = System.getProperty(PROP_REMOTE_URL, "http://admin:admin@localhost:8080/alfresco/s");
-        return new URIBuilder(baseUrl + "/eu/xenit/integration-testing/")
+        if (!baseUrl.endsWith("/")) {
+            baseUrl += "/";
+        }
+        return new URIBuilder(baseUrl + "eu/xenit/integration-testing/")
                 .setParameter("method", method.getName())
                 .setParameter("clazz", klass.getCanonicalName())
                 .build();

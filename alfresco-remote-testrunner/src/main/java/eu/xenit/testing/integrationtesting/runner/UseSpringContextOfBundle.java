@@ -26,10 +26,9 @@ import java.lang.annotation.Target;
 public @interface UseSpringContextOfBundle {
 
     /**
-     * The value may indicate a suggestion for a logical component name,
-     * to be turned into a Spring bean in case of an autodetected component.
+     * Runs the integration test in the context of a different Dynamic Extensions bundle
      *
-     * @return the suggested component name, if any
+     * @return The Bundle ID to use as context
      */
     String bundleId() default "";
 
