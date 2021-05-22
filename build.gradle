@@ -32,6 +32,10 @@ subprojects {
 
     plugins.withId('java') {
         sourceCompatibility = 1.8
+        java {
+            withJavadocJar()
+            withSourcesJar()
+        }
     }
 
     apply plugin: 'com.github.hierynomus.license'
