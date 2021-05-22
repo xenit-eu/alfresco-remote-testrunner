@@ -41,6 +41,6 @@ jobs:
           ORG_GRADLE_PROJECT_sonatype_username: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
           ORG_GRADLE_PROJECT_sonatype_password: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
 
-          ORG_GRADLE_PROJECT_gradle.publish.key: ${{ secrets.GRADLE_PLUGINS_PUBLISH_KEY }}
-          ORG_GRADLE_PROJECT_gradle.publish.secret: ${{ secrets.GRADLE_PLUGINS_PUBLISH_SECRET }}
+          GRADLE_PUBLISH_KEY: ${{ secrets.GRADLE_PLUGINS_PUBLISH_KEY }}
+          GRADLE_PUBLISH_SECRET: ${{ secrets.GRADLE_PLUGINS_PUBLISH_SECRET }}
         run: ./gradlew publish
