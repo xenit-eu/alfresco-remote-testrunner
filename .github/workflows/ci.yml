@@ -1,10 +1,10 @@
 name: CI
 on:
   push:
-      branches:
-          - master
-      tags:
-          - v*
+    branches:
+      - master
+    tags:
+      - v*
   pull_request:
   schedule:
     - cron: '0 0 * * 1'
@@ -43,4 +43,4 @@ jobs:
 
           ORG_GRADLE_PROJECT_gradle.publish.key: ${{ secrets.GRADLE_PLUGINS_PUBLISH_KEY }}
           ORG_GRADLE_PROJECT_gradle.publish.secret: ${{ secrets.GRADLE_PLUGINS_PUBLISH_SECRET }}
-        run: ./gradlew publish publishPlugins
+        run: ./gradlew publish

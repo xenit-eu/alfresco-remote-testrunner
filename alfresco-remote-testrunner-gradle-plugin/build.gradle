@@ -48,6 +48,12 @@ pluginBundle {
     }
 }
 
+publish.dependsOn(publishPlugins)
+
+publishPlugins {
+    onlyIf { project.version.version.isSignificant() }
+}
+
 afterEvaluate {
     plugins.withType(IdeaPlugin) { idea ->
         idea.model.module {

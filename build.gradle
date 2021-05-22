@@ -41,8 +41,10 @@ subprojects {
     plugins.withId("maven-publish") {
         publishing {
             publications {
-                mavenJava(MavenPublication) {
-                    from components.java
+                all {
+                    if (!project.version.version.isSignificant()) {
+                        version = "${project.version.version.normal}-SNAPSHOT"
+                    }
                     pom {
                         url = 'https://github.com/xenit-eu/alfresco-remote-testrunner'
                         name = "alfresco-remote-testrunner"
@@ -67,10 +69,13 @@ subprojects {
                         }
                     }
                 }
+                mavenJava(MavenPublication) {
+                    from components.java
+                }
             }
 
             repositories {
-                if (version.version.isFinal()) {
+                if (version.version.isSignificant()) {
                     sonatypeMavenCentral {
                         credentials {
                             username = project.findProperty('sonatype_username')
