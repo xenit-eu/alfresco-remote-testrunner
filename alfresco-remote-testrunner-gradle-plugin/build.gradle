@@ -34,6 +34,7 @@ gradlePlugin {
         remoteTestRunner {
             id = "eu.xenit.alfresco-remote-testrunner"
             displayName = "Alfresco integration testing plugin"
+            description = project.description
             implementationClass = "eu.xenit.testing.integrationtesting.gradle.IntegrationTestPlugin"
         }
     }
@@ -42,7 +43,7 @@ gradlePlugin {
 pluginBundle {
     vcsUrl = "https://github.com/xenit-eu/alfresco-remote-testrunner"
     website = vcsUrl
-    description = "Gradle plugin for running Alfresco integration tests"
+    description = project.description
     tags = ["alfresco", "integration-testing", "test", "integration"]
 
     mavenCoordinates {
