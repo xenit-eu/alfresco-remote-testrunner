@@ -13,6 +13,9 @@ apply plugin: 'eu.xenit.de'
 project.description = "Alfresco integration-test runner"
 
 configurations {
+    relocated
+    compileOnly.extendsFrom(relocated)
+    testImplementation.extendsFrom(relocated)
     shadowed
     compileOnly.extendsFrom(shadowed)
     testImplementation.extendsFrom(shadowed)
@@ -25,20 +28,34 @@ dependencies {
 
     shadowed 'commons-lang:commons-lang:2.6'
     shadowed "junit:junit:4.12"
-    shadowed 'org.apache.httpcomponents:fluent-hc:4.3.3'
+    relocated 'org.apache.httpcomponents:fluent-hc:4.3.3'
 
     testImplementation 'com.github.stefanbirkner:system-rules:1.16.1'
     testImplementation 'org.mockito:mockito-core:2.23.4'
 }
 
+task shadowRelocate(type: ShadowJar) {
+    classifier = "relocation"
+    from(sourceSets.main.output)
+    configurations = [project.configurations.relocated]
+}
+
+import com.github.jengelman.gradle.plugins.shadow.tasks.ConfigureShadowRelocation
+task relocateDependencies(type: ConfigureShadowRelocation) {
+    target = tasks.shadowRelocate
+    prefix = "eu.xenit.testing.integrationtesting.internal.shadow"
+}
+tasks.shadowRelocate.dependsOn tasks.relocateDependencies
+
 task shadowJar(type: ShadowJar) {
+    dependsOn shadowRelocate
     classifier = "shadowjar"
     from(sourceSets.main.output)
     configurations = [project.configurations.shadowed]
 }
 
 jar {
-    from(project.provider({ zipTree(shadowJar.outputs.files.singleFile) }))
+    from(project.provider({ zipTree(shadowJar.outputs.files.singleFile).plus(zipTree(shadowRelocate.outputs.files.singleFile)) }))
     dependsOn shadowJar
 
     bnd(
