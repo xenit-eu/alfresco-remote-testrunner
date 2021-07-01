@@ -15,6 +15,11 @@
  */
 package eu.xenit.testing.integrationtesting.exception;
 
+/**
+ * This exception is thrown in cases where a completely unexpected exception is caught.
+ * <p>
+ * This happens in case of IO errors, or in case of programming errors within the testrunner itself.
+ */
 public class RemoteTestRunnerInternalException extends RemoteTestRunnerException {
 
     public RemoteTestRunnerInternalException(Throwable cause) {

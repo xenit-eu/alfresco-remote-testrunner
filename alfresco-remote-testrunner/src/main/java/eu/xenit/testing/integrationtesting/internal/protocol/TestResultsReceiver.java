@@ -24,21 +24,22 @@ import org.apache.commons.lang.SerializationUtils;
 
 public class TestResultsReceiver {
 
+    public static final ProtocolVersion PROTOCOL_VERSION = new ProtocolVersion(1);
+
     private final BufferedReader inputStream;
 
     public TestResultsReceiver(InputStream inputStream) {
         this.inputStream = new BufferedReader(new InputStreamReader(inputStream));
-
     }
 
     public Message receive() throws IOException {
         String line = inputStream.readLine();
-        if(line == null) {
+        if (line == null) {
             return null;
         }
         int firstSpace = line.indexOf(' ');
         MessageType messageType = MessageType.valueOf(line.substring(0, firstSpace));
-        String serializedObject = line.substring(firstSpace+1);
+        String serializedObject = line.substring(firstSpace + 1);
         Object object = SerializationUtils.deserialize(Base64.decodeBase64(serializedObject));
 
         return new Message(messageType, object);

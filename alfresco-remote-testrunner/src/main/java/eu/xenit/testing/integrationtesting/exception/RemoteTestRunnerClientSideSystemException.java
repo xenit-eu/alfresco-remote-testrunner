@@ -15,6 +15,10 @@
  */
 package eu.xenit.testing.integrationtesting.exception;
 
+/**
+ * This exception is thrown only on the client side, when the remote failed in such an unrecoverable way that it is not able
+ * to send a properly serialized exception to the client anymore.
+ */
 public class RemoteTestRunnerClientSideSystemException extends RemoteTestRunnerException {
 
     public RemoteTestRunnerClientSideSystemException(String message) {

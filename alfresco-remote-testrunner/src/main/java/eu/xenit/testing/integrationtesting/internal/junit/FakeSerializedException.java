@@ -17,8 +17,20 @@ package eu.xenit.testing.integrationtesting.internal.junit;
 
 import java.io.Serializable;
 
-public class FakeSerializedException extends Exception implements Serializable {
 
+/**
+ * This is an internal exception that is normally not shown to users.
+ * <p>
+ * This exception is a client-side standin for an exception that is thrown on the remote.
+ * It tries to mask itself by taking on the message and stacktrace of the original exception on the remote.
+ * <p>
+ * We need this wrapper for 2 reasons:
+ * 1. The exception that was thrown on the remote is not serializable. We can't send it and its data over the wire because we can't serialize it.
+ * 2. The exception class from the remote is not known locally. We can't deserialize the exception we have received, so it is impossible to reconstruct it.
+ * <p>
+ * Because we can not know beforehand if the exception will be in any of these 2 cases, we will have to deal with it and always convert all remote exceptions to this exception.
+ */
+public class FakeSerializedException extends Exception implements Serializable {
 
     public FakeSerializedException(Throwable exception) {
         super(exception.toString());

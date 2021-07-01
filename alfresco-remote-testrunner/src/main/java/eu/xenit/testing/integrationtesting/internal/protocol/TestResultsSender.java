@@ -15,7 +15,6 @@
  */
 package eu.xenit.testing.integrationtesting.internal.protocol;
 
-import eu.xenit.testing.integrationtesting.exception.RemoteTestRunnerException;
 import eu.xenit.testing.integrationtesting.exception.RemoteTestRunnerInternalException;
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
@@ -28,10 +27,13 @@ import org.apache.http.util.EncodingUtils;
 
 public class TestResultsSender {
 
+    public static final ProtocolVersion PROTOCOL_VERSION = new ProtocolVersion(1);
+
     private final OutputStreamWriter outputStream;
 
     public TestResultsSender(OutputStream outputStream) {
         this.outputStream = new OutputStreamWriter(outputStream);
+        send(MessageType.PROTOCOL_VERSION, PROTOCOL_VERSION);
     }
 
     public void send(MessageType messageType, Serializable object) {
@@ -46,8 +48,8 @@ public class TestResultsSender {
             outputStream.write(serializedObject);
             outputStream.write("\n");
             outputStream.flush();
-        } catch(Exception exception) {
-            if(failOnError) {
+        } catch (Exception exception) {
+            if (failOnError) {
                 throw new RemoteTestRunnerInternalException(exception);
             }
             ByteArrayOutputStream exceptionStack = new ByteArrayOutputStream();
@@ -73,7 +75,7 @@ public class TestResultsSender {
                 newOut.flush();
                 newErr.flush();
             }
-        } catch(Exception e) {
+        } catch (Exception e) {
             send(MessageType.SYSTEM_ERROR, e.toString());
             throw new RemoteTestRunnerInternalException(e);
         } finally {
@@ -83,6 +85,7 @@ public class TestResultsSender {
     }
 
     private static class ProxyStream extends PrintStream {
+
         private final MessageType messageType;
         private final TestResultsSender testResultsSender;
 
