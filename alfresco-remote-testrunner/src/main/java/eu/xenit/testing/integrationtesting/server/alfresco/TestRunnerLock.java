@@ -15,9 +15,11 @@
  */
 package eu.xenit.testing.integrationtesting.server.alfresco;
 
+import eu.xenit.testing.integrationtesting.exception.RemoteTestRunnerUserException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.alfresco.repo.lock.JobLockService;
 import org.alfresco.repo.lock.JobLockService.JobLockRefreshCallback;
+import org.alfresco.repo.lock.LockAcquisitionException;
 import org.alfresco.service.namespace.QName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,8 +44,17 @@ public class TestRunnerLock {
     public void runWithLock(Runnable runnable) {
         TestRunnerLockRefreshCallback testRunnerLockRefreshCallback = new TestRunnerLockRefreshCallback(runnable);
         LOGGER.debug("Acquire lock for the test runner");
-        String lockToken = jobLockService.getLock(TEST_RUNNER_QNAME, 60 * 1000, testRunnerLockRefreshCallback);
-        LOGGER.debug("Acquire lock for test runner successful");
+        String lockToken;
+        try {
+            lockToken = jobLockService.getLock(TEST_RUNNER_QNAME, 60L * 1000, testRunnerLockRefreshCallback);
+            LOGGER.debug("Acquire lock for test runner successful");
+        } catch (LockAcquisitionException lockAcquisitionException) {
+            throw new RemoteTestRunnerUserException("Failed to aquire the testrunner lock", new String[]{
+                    "Only one test can be run at the same time.",
+                    "Are you sure that your previous test run has finished running? Aborting a test run will still let the current test method run to completion.",
+                    "Is JUnit (or your build tool) configured to run multiple tests in parallel?"
+            }, lockAcquisitionException);
+        }
 
         try {
             testRunnerLockRefreshCallback.run();

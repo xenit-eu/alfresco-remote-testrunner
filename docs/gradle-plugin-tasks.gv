@@ -1,0 +1,62 @@
+# This is a graphviz file.
+ # Compile with `dot -O -Tpng gradle-plugin-tasks.gv`
+digraph {
+
+    node [style = filled,shape = box]
+
+    subgraph classpaths {
+    node [fillcolor = turquoise]
+    subgraph cluster_integrationTest_classpaths {
+
+    integrationTestCompileClasspath
+    integrationTestRuntimeClasspath
+    }
+    }
+
+    subgraph public_configs {
+    node [fillcolor = green]
+    integrationTestImplementationRemote
+    integrationTestingBundle [style = "filled,dashed", label = "\N\n(default dependencies provided by plugin)"]
+    }
+
+
+
+    integration_test_bundle_jar [fillcolor = red,shape = oval, label = "Integration Test DE Bundle\n(artifact)"]
+
+    subgraph cluster_tasks {
+    node [fillcolor = cyan,style = "filled",fontname = "mono"]
+
+    installIntegrationTestingBundle
+    installIntegrationTestBundle
+
+    integrationTestFatJar
+
+    integrationTest
+    compileIntegrationTestJava
+    installBundle [style = "filled,dotted", label = "\N\n(from eu.xenit.de plugin)"]
+    check [style = "filled,dotted",label = "\N\n(from base plugin)"]
+    }
+
+    subgraph task_edges {
+    edge [style = dashed, label = "Used by"]
+
+    integrationTestingBundle -> installIntegrationTestingBundle
+    integration_test_bundle_jar -> installIntegrationTestBundle
+    integrationTestRuntimeClasspath -> integrationTest
+    integrationTestCompileClasspath -> compileIntegrationTestJava
+    integrationTestImplementationRemote -> integrationTestFatJar
+    }
+
+    subgraph task_deps {
+    edge [label = "dependsOn"]
+    integrationTestFatJar -> compileIntegrationTestJava
+    installIntegrationTestBundle -> installIntegrationTestingBundle
+    integrationTest -> installIntegrationTestBundle
+    integrationTest -> installBundle
+    check -> integrationTest
+    }
+    subgraph task_outputs {
+    edge [style = dotted, label = "Produces"]
+    integrationTestFatJar -> integration_test_bundle_jar
+    }
+}

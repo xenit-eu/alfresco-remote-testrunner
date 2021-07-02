@@ -133,7 +133,7 @@ public class DynamicExtensionsTestClassMetadata {
 
         @Override
         public Class<? extends Annotation> annotationType() {
-            return null;
+            return Transaction.class;
         }
 
         @Override

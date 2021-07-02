@@ -21,6 +21,7 @@ import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunNotifier;
 
 public class Message {
+
     private final MessageType messageType;
     private final Object object;
 
@@ -37,11 +38,13 @@ public class Message {
         return object;
     }
 
-    private <T> T asType(Class<T> clazz) {
-        if(!messageType.getSerializedClass().equals(clazz)) {
-            throw new IllegalArgumentException("Message type "+messageType.name()+" serializes class "+messageType.getSerializedClass()+" and not requested class "+clazz);
+    <T> T asType(Class<T> clazz) {
+        if (!messageType.getSerializedClass().equals(clazz)) {
+            throw new IllegalArgumentException(
+                    "Message type " + messageType.name() + " serializes class " + messageType.getSerializedClass()
+                            + " and not requested class " + clazz);
         }
-        return (T)getObject();
+        return (T) getObject();
     }
 
     Description getDescription() {

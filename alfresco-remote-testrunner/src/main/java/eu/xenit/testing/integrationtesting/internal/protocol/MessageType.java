@@ -16,6 +16,7 @@
 package eu.xenit.testing.integrationtesting.internal.protocol;
 
 import eu.xenit.testing.integrationtesting.exception.RemoteTestRunnerClientSideSystemException;
+import eu.xenit.testing.integrationtesting.exception.RemoteTestRunnerUserException;
 import java.util.function.BiConsumer;
 import org.junit.runner.Description;
 import org.junit.runner.Result;
@@ -23,6 +24,16 @@ import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunNotifier;
 
 public enum MessageType {
+    PROTOCOL_VERSION(ProtocolVersion.class, (runNotifier, message) -> {
+        if (!TestResultsReceiver.PROTOCOL_VERSION.isCompatibleWith(message.asType(ProtocolVersion.class))) {
+            throw new RemoteTestRunnerUserException(
+                    "Incompatible wire protocol. Client: " + TestResultsReceiver.PROTOCOL_VERSION + " Server: "
+                            + message.asType(ProtocolVersion.class), new String[]{
+                    "Are you using compatible versions of alfresco-remote-testrunner on client and server?",
+                    "Are you using the same java version on client and server?"
+            });
+        }
+    }),
     RUN_STARTED(Description.class, (runNotifier, message) -> runNotifier.fireTestRunStarted(message.getDescription())),
     RUN_FINISHED(Result.class, (runNotifier, message) -> runNotifier.fireTestRunFinished(message.getResult())),
     TEST_STARTED(Description.class, (runNotifier, message) -> runNotifier.fireTestStarted(message.getDescription())),

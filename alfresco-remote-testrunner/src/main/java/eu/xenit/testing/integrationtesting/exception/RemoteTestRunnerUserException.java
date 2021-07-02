@@ -15,6 +15,9 @@
  */
 package eu.xenit.testing.integrationtesting.exception;
 
+/**
+ * This exception is thrown in cases where it is certain that an error of the user resulted in failure of the test-runner system.
+ */
 public class RemoteTestRunnerUserException extends RemoteTestRunnerException {
 
     public RemoteTestRunnerUserException(String message) {

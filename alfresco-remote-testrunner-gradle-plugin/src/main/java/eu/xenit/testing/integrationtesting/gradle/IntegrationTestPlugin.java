@@ -62,6 +62,7 @@ public class IntegrationTestPlugin implements Plugin<Project> {
             InstallBundle installBundle = project.getTasks().withType(InstallBundle.class).findByName("installBundle");
             if (installBundle != null) {
                 integrationTestTasks.getIntegrationTest().dependsOn(installBundle);
+                integrationTestTasks.getInstallIntegrationTestsBundle().mustRunAfter(installBundle);
             }
 
             // Hook up
@@ -112,14 +113,15 @@ public class IntegrationTestPlugin implements Plugin<Project> {
         SourceSet integrationTestsSourceSet = sourceSets.maybeCreate("integrationTest");
 
         integrationTestsSourceSet.setCompileClasspath(
-                integrationTestsSourceSet.getCompileClasspath()
-                        .plus(mainSourceSet.getCompileClasspath())
-                        .plus(mainSourceSet.getOutput())
+                mainSourceSet.getOutput()
+                        .plus(project.getConfigurations()
+                                .getByName(integrationTestsSourceSet.getCompileClasspathConfigurationName()))
         );
         integrationTestsSourceSet.setRuntimeClasspath(
-                integrationTestsSourceSet.getRuntimeClasspath()
-                        .plus(mainSourceSet.getRuntimeClasspath())
+                integrationTestsSourceSet.getOutput()
                         .plus(mainSourceSet.getOutput())
+                        .plus(project.getConfigurations()
+                                .getByName(integrationTestsSourceSet.getRuntimeClasspathConfigurationName()))
         );
 
         return integrationTestsSourceSet;
@@ -134,7 +136,7 @@ public class IntegrationTestPlugin implements Plugin<Project> {
      */
     private AbstractArchiveTask createDynamicExtensionsJarTask(Project project, SourceSet sourceSet,
             Configuration remoteDependencies, IntegrationTestSettings integrationTestSettings) {
-        return project.getTasks().create("_alfrescoIntegrationTestInternal_ShadowJar", ShadowJar.class, task -> {
+        return project.getTasks().create("integrationTestFatJar", ShadowJar.class, task -> {
             task.dependsOn(sourceSet.getClassesTaskName());
             task.from(sourceSet.getOutput());
             task.getArchiveClassifier().set("integration-test-all");

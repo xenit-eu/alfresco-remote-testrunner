@@ -42,10 +42,10 @@ public final class IntegrationTestTasks {
             IntegrationTestConfigurations integrationTestConfigurations, AbstractArchiveTask dynamicExtensionArchive,
             SourceSet integrationTestSourceSet, Provider<Repository> repositoryProvider) {
 
-        InstallBundle installIntegrationTesting = createInstallIntegrationTesting(project,
+        InstallBundle installIntegrationTesting = createInstallIntegrationTestingBundle(project,
                 integrationTestConfigurations);
 
-        InstallBundle installIntegrationTests = createInstallIntegrationTests(project, dynamicExtensionArchive);
+        InstallBundle installIntegrationTests = createInstallIntegrationTestBundle(project, dynamicExtensionArchive);
         installIntegrationTests.dependsOn(installIntegrationTesting);
 
         Test integrationTest = createIntegrationTest(project, integrationTestSourceSet, repositoryProvider);
@@ -88,7 +88,7 @@ public final class IntegrationTestTasks {
      * <p>
      * This task should be executed after alfresco is up. We can not add a dependsOn here, so the user will have to do that themselves
      */
-    private static InstallBundle createInstallIntegrationTests(Project project,
+    private static InstallBundle createInstallIntegrationTestBundle(Project project,
             AbstractArchiveTask dynamicExtensionArchive) {
         return project.getTasks().create("installIntegrationTestBundle", InstallBundle.class, task -> {
             task.dependsOn(dynamicExtensionArchive);
@@ -102,7 +102,7 @@ public final class IntegrationTestTasks {
      * <p>
      * This task should be executed after alfresco is up. We can not add a dependsOn here, so the user will have to do that themselves
      */
-    private static InstallBundle createInstallIntegrationTesting(Project project,
+    private static InstallBundle createInstallIntegrationTestingBundle(Project project,
             IntegrationTestConfigurations integrationTestConfigurations) {
         return project.getTasks().create("installIntegrationTestingBundle", InstallBundle.class, task -> {
             task.setGroup("install");
