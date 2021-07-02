@@ -49,7 +49,8 @@ public class AlfrescoJUnit4ClassRunner extends BlockJUnit4ClassRunner {
         } catch (BeansException | ClassNotFoundException e) {
             throw new RemoteTestRunnerUserException("Failed to create test class", new String[]{
                     "Are you trying to autowire a class from a different bundle without @UseSpringContextOfBundle annotation?",
-                    ""
+                    "Make sure that both your test bundle and the bundle under test are exporting at least one package.",
+                    "All classes that you want to autowire must be exported from the bundle where they are located."
             }, e);
         }
     }

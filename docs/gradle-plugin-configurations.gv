@@ -1,0 +1,70 @@
+# This is a graphviz file.
+ # Compile with `dot -O -Tpng gradle-plugin-configurations.gv`
+strict digraph {
+
+    node [style = filled,shape = box]
+
+    subgraph classpaths {
+    node [fillcolor = turquoise]
+    subgraph cluster_main_classpaths {
+    compileClasspath
+    runtimeClasspath
+    }
+
+    subgraph cluster_integrationTest_classpaths {
+
+    integrationTestCompileClasspath
+    integrationTestRuntimeClasspath
+    alfresco_de_classpath [style = "filled,dotted", label = "Alfresco Dynamic Extensions classpath (virtual)"]
+    }
+    }
+
+    subgraph public_configs {
+    node [fillcolor = green]
+    implementation
+    runtimeOnly
+    compileOnly
+
+    integrationTestImplementationRemote
+    integrationTestImplementationLocal
+    integrationTestingBundle [style = "filled,dashed", label = "\N\n(default dependencies provided by plugin)"]
+    alfrescoProvided [style = "filled,dotted", label = "\N\n(from eu.xenit.alfresco plugin)"]
+    }
+
+
+    # main classpaths
+    implementation -> runtimeClasspath
+    runtimeOnly -> runtimeClasspath
+    implementation -> compileClasspath
+    compileOnly -> compileClasspath
+
+    alfrescoProvided -> compileOnly
+
+
+    integration_test_bundle_jar [fillcolor = red,shape = oval, label = "Integration Test DE Bundle\n(artifact)"]
+    integration_test_bundle_jar -> alfresco_de_classpath
+
+    # integrationTest classpaths
+    integrationTestImplementation -> integrationTestCompileClasspath
+    integrationTestCompileOnly -> integrationTestCompileClasspath
+    integrationTestImplementation -> integrationTestRuntimeClasspath
+    integrationTestRuntimeOnly -> integrationTestRuntimeClasspath
+    runtimeOnly -> integrationTestRuntimeOnly
+
+    # integrationTestImplementation
+    integrationTestImplementationRemote -> integrationTestImplementation
+    integrationTestImplementationLocal -> integrationTestImplementation
+    implementation -> integrationTestImplementation
+
+    # integrationTestImplementationLocal
+    alfrescoProvided -> integrationTestImplementationLocal
+    integrationTestingBundle -> integrationTestImplementationLocal
+
+    # integrationTestImplementationRemote
+    integrationTestImplementationRemote -> integration_test_bundle_jar
+
+    # alfresco_de_classpath
+    integrationTestingBundle -> alfresco_de_classpath
+
+
+}
