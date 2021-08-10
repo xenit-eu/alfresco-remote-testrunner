@@ -1,5 +1,34 @@
 # Alfresco remote testrunner - Changelog
 
+## 2.0.0 (2021-08-10)
+
+No changes from previous version.
+
+## 2.0.0-rc.6 (2021-07-02)
+
+### Changes
+
+ * [#2](https://github.com/xenit-eu/alfresco-remote-testrunner/pull/2) Changed how integrationTest sourceset receives dependencies from main sourceset
+
+## 2.0.0-rc.5 (2021-06-11)
+
+### Fixes
+
+* [#1](https://github.com/xenit-eu/alfresco-remote-testrunner/pull/1) relocate fluent-hc to work with alfresco 6.x versions
+
+## 2.0.0-rc.4 (2021-05-25)
+
+Configure description of Gradle plugin so the plugin descriptor pom is valid for maven central
+
+## 2.0.0-rc.3 (2021-05-22)
+
+Enable signing and javadoc/sources jars for the Gradle plugin, so it can be published to maven central as well
+
+## 2.0.0-rc.2 (2021-05-22)
+
+Version 2.0.0-rc.1 was not properly published.
+This version fixes that.
+
 ## 2.0.0-rc.1 (2021-05-22)
 
 > First open-source release of the Alfresco remote testrunner
