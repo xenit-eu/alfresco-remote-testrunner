@@ -1,5 +1,9 @@
 # Alfresco remote testrunner - Changelog
 
+## 2.0.1 (2023-01-04)
+
+* [#4](https://github.com/xenit-eu/alfresco-remote-testrunner/pull/4) [DEVEM-524](https://xenitsupport.jira.com/browse/DEVEM-524) Modify osgi manifest generation to allow for systems that only provide org.slf4j. > 2.0.0
+
 ## 2.0.0 (2021-08-10)
 
 No changes from previous version.
